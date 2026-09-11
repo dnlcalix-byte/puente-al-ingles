@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Puente al Inglés</title>
+<meta name="description" content="Curso de inglés alineado con el MCER y orientado al IELTS. 150 lecciones con práctica conversacional evaluada por voz.">
+<meta name="theme-color" content="#0E6E63" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1311" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Puente al Inglés">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="iconos/icono-192.png">
+<link rel="icon" href="iconos/icono-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@0,400;0,600;0,700;1,400&family=Archivo:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="estilos.css">
+<style>
+  :root{color-scheme:light dark}
+  body{margin:0}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  /* Respeta la zona segura del iPhone cuando corre a pantalla completa */
+  .shell{padding-left:max(20px, env(safe-area-inset-left)); padding-right:max(20px, env(safe-area-inset-right))}
+  .masthead{padding-top:max(22px, env(safe-area-inset-top))}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<header class="masthead">
+  <div class="brandrow">
+    <div class="brand" id="brandHome" role="button" tabindex="0" title="Ir al índice del curso">
+      <div class="sigil">Pi</div>
+      <div>
+        <div class="brand-t">Puente al Inglés</div>
+        <div class="brand-s">MCER A1&ndash;C1 &middot; Ruta IELTS</div>
+      </div>
+    </div>
+    <div class="headtools">
+      <button class="btn sm" id="indexBtn" type="button" hidden>&larr; Índice</button>
+      <button class="btn sm solid" id="installBtn" type="button" hidden>Instalar app</button>
+      <button class="btn sm" id="afiBtn" type="button" aria-pressed="false">Mostrar AFI</button>
+      <button class="btn sm" id="themeBtn" type="button">Tema</button>
+      <button class="btn sm" id="resetBtn" type="button">Reiniciar progreso</button>
+    </div>
+  </div>
+
+  <div class="lessonbar" id="lessonbar" hidden>
+    <div class="lt">
+      <div class="eyebrow" id="lvEyebrow"></div>
+      <h1 id="lvTitle"></h1>
+      <p class="cando" id="lvCando"></p>
+    </div>
+    <div class="ring">
+      <svg width="54" height="54" viewBox="0 0 54 54" aria-hidden="true">
+        <circle cx="27" cy="27" r="23" fill="none" stroke="var(--line-2)" stroke-width="5"></circle>
+        <circle id="ringArc" cx="27" cy="27" r="23" fill="none" stroke="var(--accent)" stroke-width="5"
+                stroke-linecap="round" stroke-dasharray="144.5" stroke-dashoffset="144.5"
+                transform="rotate(-90 27 27)" style="transition:stroke-dashoffset .5s ease"></circle>
+      </svg>
+      <div>
+        <div class="rl">Turnos logrados</div>
+        <div class="rv" id="ringTxt">0 / 12</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div id="view-home">
+  <section class="homehero">
+    <div class="eyebrow">Programa completo &middot; MCER &rarr; IELTS</div>
+    <h1>Tu ruta de inglés</h1>
+    <p class="homelede">150 lecciones desde cero hasta C1. Cada una se estudia primero y se practica después, hablando en voz alta. Ninguna se da por superada hasta que el diagnóstico lo confirma.</p>
+    <div class="homestats">
+      <div class="hs"><div class="k">Lecciones superadas</div><div class="v" id="homeSuperadas">0 / 150</div></div>
+      <div class="hs"><div class="k">Nivel actual</div><div class="v" id="homeNivel">A1</div></div>
+      <div class="hs"><div class="k">Listas para estudiar</div><div class="v" id="homeListas">1</div></div>
+    </div>
+    <button class="btn solid" id="continueBtn" type="button" hidden></button>
+    <p class="ioshint" id="iosHint" hidden>En iPhone o iPad: toca <b>Compartir</b> y después <b>Añadir a pantalla de inicio</b> para instalarla como app.</p>
+  </section>
+  <div id="levelsHost"></div>
+</div>
+
+<div id="view-leccion" hidden>
+<div class="grid">
+  <nav class="rail" aria-label="Secciones de la lección">
+    <div class="railhead">Fase 1 &middot; Estudio autónomo</div>
+    <div class="railgroup">
+      <button class="navbtn" data-go="vocab" type="button"><span class="navnum">1</span>Vocabulario</button>
+      <button class="navbtn" data-go="verbos" type="button"><span class="navnum">2</span>Verbos</button>
+      <button class="navbtn" data-go="gram" type="button"><span class="navnum">3</span>Gramática</button>
+    </div>
+    <div class="railhead">Fase 2 &middot; Lección</div>
+    <div class="railgroup">
+      <button class="navbtn" data-go="guion" type="button"><span class="navnum">4</span>Guion</button>
+      <button class="navbtn" data-go="prac" type="button"><span class="navnum">5</span>Práctica</button>
+      <button class="navbtn" data-go="diag" type="button"><span class="navnum">6</span>Diagnóstico</button>
+    </div>
+    <div class="railhead">Programa</div>
+    <div class="railgroup">
+      <button class="navbtn" data-go="ruta" type="button"><span class="navnum">&rarr;</span>Ruta A1–C1</button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ===== VOCABULARIO ===== -->
+    <section class="panel" id="p-vocab" hidden>
+      <div class="ptitle"><h2>Vocabulario</h2><span class="tag" id="vocabCount"></span></div>
+      <p class="lede">Léxico mínimo indispensable del bloque. Debajo de cada palabra va su <b>pronunciación aproximada</b> escrita con letras españolas: léela tal como suena en español y te acercarás mucho al inglés real. Pulsa ♪ para escuchar el modelo y corregir el resto. Empieza por la clave de abajo, porque seis de esos sonidos no existen en español.</p>
+      <div id="vocabHost"></div>
+    </section>
+
+    <!-- ===== VERBOS ===== -->
+    <section class="panel" id="p-verbos" hidden>
+      <div class="ptitle"><h2>Verbos</h2><span class="tag">11 verbos · 3 tiempos</span></div>
+      <p class="lede">Los verbos <b>regulares</b> forman el pasado añadiendo <span class="mono">-ed</span>. Los <b>irregulares</b> cambian de forma y deben memorizarse. El futuro simple se construye siempre igual: <span class="mono">will + infinitivo sin «to»</span>, sin importar el tipo de verbo ni la persona.</p>
+      <div class="tw">
+        <table>
+          <thead><tr><th>Infinitivo</th><th>Tipo</th><th>Presente (I / he)</th><th>Pasado</th><th>Futuro</th><th>Español</th></tr></thead>
+          <tbody id="verbBody"></tbody>
+        </table>
+      </div>
+      <div class="aviso">
+        <div class="at">Reglas de ortografía del pasado regular</div>
+        <p><b>study &rarr; studied</b>: consonante + <i>y</i> &rarr; <i>ied</i>. &nbsp;<b>live &rarr; lived</b>: si ya termina en <i>e</i>, solo se añade <i>d</i>. &nbsp;<b>work &rarr; worked</b>: caso general, <i>+ed</i>.</p>
+      </div>
+      <div class="aviso">
+        <div class="at">La «s» de la tercera persona</div>
+        <p>En presente simple, <i>he / she / it</i> añade <b>-s</b> al verbo: <span class="mono">I work</span> pero <span class="mono">she work<b>s</b></span>. Con <i>study</i> la regla de la <i>y</i> vuelve a aplicar: <span class="mono">he stud<b>ies</b></span>. Omitir esa «s» es el error más frecuente de los hispanohablantes en A1.</p>
+      </div>
+    </section>
+
+    <!-- ===== GRAMÁTICA ===== -->
+    <section class="panel" id="p-gram" hidden>
+      <div class="ptitle"><h2>Gramática</h2><span class="tag">6 estructuras</span></div>
+      <p class="lede">Estas seis estructuras sostienen por completo el diálogo de la lección. Estúdialas antes de pasar a la práctica: en la Fase 2 el sistema asume que ya las dominas.</p>
+      <div id="gramHost"></div>
+    </section>
+
+    <!-- ===== GUION ===== -->
+    <section class="panel" id="p-guion" hidden>
+      <div class="ptitle"><h2>Guion del diálogo</h2><span class="tag">24 líneas · A1</span></div>
+      <p class="lede">Modelo sintáctico entre <b>Sarah</b> (Persona 1) y <b>David</b> (Persona 2). Cada bloque en inglés lleva su traducción alineada justo debajo, de modo que puedas ver la correspondencia estructural entre ambos idiomas. Bajo cada línea va su pronunciación aproximada en letras españolas. Pulsa ▶ para escuchar una línea: el resaltado amarillo avanzará bloque por bloque al ritmo del audio.</p>
+      <div style="display:flex; gap:9px; flex-wrap:wrap; margin-bottom:16px">
+        <button class="btn sm solid" id="playAll" type="button">▶ Reproducir diálogo completo</button>
+        <button class="btn sm" id="stopAll" type="button">■ Detener</button>
+        <button class="btn sm" id="toggleEs" type="button" aria-pressed="true">Ocultar traducción</button>
+      </div>
+      <div class="card"><div class="dlg" id="dlgHost"></div></div>
+    </section>
+
+    <!-- ===== PRÁCTICA ===== -->
+    <section class="panel" id="p-prac" hidden>
+      <div class="ptitle"><h2>Práctica interactiva</h2><span class="tag" id="lvRole"></span></div>
+      <p class="lede" id="pracLede"></p>
+
+      <div class="stagewrap">
+        <div>
+          <div class="stage">
+            <div class="stagetop">
+              <span class="who" id="lvScene"></span>
+              <span class="meter"><i id="stageMeter"></i></span>
+              <span class="ct" id="stageCount">línea 1 / 24</span>
+            </div>
+            <div class="turns" id="turns" aria-live="polite"></div>
+            <div class="console">
+              <div class="prompt" id="prompt">Pulsa <b>Empezar</b> para que Sarah abra la conversación.</div>
+              <div class="inputrow">
+                <button class="mic" id="micBtn" type="button" disabled><span class="blip"></span><span id="micTxt">Hablar</span></button>
+                <input class="tin" id="textIn" type="text" lang="en-US" inputmode="text" placeholder="Dicta o escribe tu respuesta y pulsa Enter" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" disabled>
+                <button class="btn" id="sendBtn" type="button" disabled>Enviar</button>
+                <button class="btn" id="hintBtn" type="button" disabled>Pista</button>
+              </div>
+              <div class="heard" id="heard"></div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="side">
+          <div class="spanel">
+            <h4>Modo de evaluación</h4>
+            <div class="modes">
+              <button class="mode" id="mGuion" type="button" aria-pressed="true">
+                <span class="mk"></span>
+                <span><span class="mt">Modo guion</span><span class="md">Reproduce la línea memorizada. Corrección palabra por palabra, instantánea.</span></span>
+              </button>
+              <button class="mode" id="mLibre" type="button" aria-pressed="false">
+                <span class="mk"></span>
+                <span><span class="mt">Modo libre</span><span class="md">Responde con tus propias palabras. Claude juzga gramática y pertinencia.</span></span>
+              </button>
+            </div>
+            <p class="note" id="sampleNote" style="margin-top:10px"></p>
+          </div>
+
+          <div class="spanel">
+            <h4>Desempeño en vivo</h4>
+            <div class="stats">
+              <div class="stat"><span class="k">Turnos superados</span><span class="v" id="stTurns">0 / 12</span></div>
+              <div class="stat"><span class="k">Precisión media</span><span class="v" id="stAcc">—</span></div>
+              <div class="stat"><span class="k">Al primer intento</span><span class="v" id="stFirst">0</span></div>
+              <div class="stat"><span class="k">Pistas usadas</span><span class="v" id="stHints">0</span></div>
+            </div>
+          </div>
+
+          <div class="spanel">
+            <h4>Micrófono</h4>
+            <p class="note" id="asrNote">Comprobando compatibilidad…</p>
+            <p class="note" id="asrDiag" style="margin-top:8px;font-family:var(--mono);font-size:11px;opacity:.7"></p>
+          </div>
+
+          <button class="btn" id="restartBtn" type="button">Reiniciar la práctica</button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===== DIAGNÓSTICO ===== -->
+    <section class="panel" id="p-diag" hidden>
+      <div class="ptitle"><h2>Diagnóstico</h2><span class="tag">Evaluación de cierre</span></div>
+      <p class="lede">Al terminar los 12 turnos, el sistema emite un juicio cualitativo sobre tu desempeño y decide formalmente si desbloqueas la Lección 02 o debes volver a estudiar antes de repetir el ejercicio.</p>
+      <div id="diagHost"></div>
+    </section>
+
+    <!-- ===== RUTA ===== -->
+    <section class="panel" id="p-ruta" hidden>
+      <div class="ptitle"><h2>Ruta A1 &rarr; C1</h2><span class="tag">150 lecciones</span></div>
+      <p class="lede">El programa avanza por los cinco niveles del MCER. Cada nivel se cierra con las lecciones necesarias para aprobar su certificación, y los tres últimos incorporan tareas con el formato exacto de las cuatro secciones del IELTS.</p>
+      <div class="road" id="roadHost"></div>
+      <div class="aviso" style="margin-top:18px">
+        <div class="at">Sobre la correspondencia con el IELTS</div>
+        <p>IELTS advierte que la relación con el MCER «es compleja» y que no debe asumirse una equivalencia exacta entre instrumentos de evaluación distintos. Su documentación sí fija dos anclas: la banda <b>8.5 o superior</b> se reconoce como C2 (la banda 8 es limítrofe) y el <b>umbral mínimo de C1 cae entre las bandas 6.5 y 7</b>. Las bandas de la tabla son orientativas y sirven para fijar metas, no para certificar un nivel.</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+</div>
+
+<footer class="footer">
+  <span>Puente al Inglés &middot; Lección A1-01 &middot; Diseñado sobre los descriptores del MCER (Consejo de Europa)</span>
+  <span id="saveState">Progreso local</span>
+</footer>
+</div>
+
+
+<script src="curriculo.js"></script>
+<script src="lecciones/a1-01.js"></script>
+<script src="motor.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
