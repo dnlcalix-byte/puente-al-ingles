@@ -209,5 +209,32 @@ const GLOSARIO_BASE = [
   ["name","neɪm","nombre","néim"],["people","ˈpiːpl","personas, gente","píipl"],
   ["day","deɪ","día","déi"],["today","təˈdeɪ","hoy","tudéi"],["time","taɪm","tiempo, hora","táim"],
   ["good","ɡʊd","bueno","gud"],["big","bɪɡ","grande","big"],["small","smɔːl","pequeño","smóol"],
-  ["new","nuː","nuevo","núu"],["old","oʊld","viejo; de edad","óuld"]
+  ["new","nuː","nuevo","núu"],["old","oʊld","viejo; de edad","óuld"],
+  /* Palabras funcionales que aparecen en las lecturas */
+  ["home","hoʊm","casa, a casa","jóum"],["after","ˈæftər","después de","áftar"],
+  ["before","bɪˈfɔːr","antes de","bifór"],["should","ʃʊd","debería","shud"],
+  ["TV","ˌtiːˈviː","televisión","tiví"],["again","əˈɡen","otra vez","aguén"],
+  /* Personajes y lugares del curso */
+  ["David","ˈdeɪvɪd","David (el alumno)","déivid"],
+  ["Sarah","ˈserə","Sarah (amiga canadiense)","séra"],
+  ["Ana","ˈɑːnə","Ana (hermana de David)","ána"],
+  ["Pablo","ˈpɑːbloʊ","Pablo (primo)","páblou"],
+  ["Nico","ˈniːkoʊ","Nico (primo)","níkou"],
+  ["Carlos","ˈkɑːrloʊs","Carlos (vecino)","kárlous"],
+  ["Kevin","ˈkevɪn","Kevin (compañero)","kévin"],
+  ["Luis","luːˈiːs","Luis (vecino)","luís"],
+  ["Marta","ˈmɑːrtə","Marta (vecina)","márta"],
+  ["Sofía","soʊˈfiːə","Sofía (prima)","sofía"],
+  ["Max","mæks","Max (el perro)","maks"],
+  ["Ortega","ɔːrˈteɪɡə","Ortega (apellido del tendero)","ortéga"],
+  ["Castro","ˈkæstroʊ","Castro (apellido de la maestra)","kástrou"],
+  ["Reyes","ˈreɪjɪs","Reyes (apellido de la doctora)","réyis"],
+  ["Mr.","ˈmɪstər","señor","míster"],
+  ["Mrs.","ˈmɪsɪz","señora","mísis"],
+  ["Dr.","ˈdɑːktər","doctor, doctora","dáktar"],
+  ["Honduras","hɑːnˈdʊrəs","Honduras","jandúras"],
+  ["Canada","ˈkænədə","Canadá","kánada"],
+  ["Tegucigalpa","təˌɡuːsɪˈɡɑːlpə","Tegucigalpa","tegusigálpa"],
+  ["Toronto","təˈrɑːntoʊ","Toronto","tarántou"],
+  ["ask","æsk","preguntar","ask"],["asks","æsks","pregunta","asks"]
 ];

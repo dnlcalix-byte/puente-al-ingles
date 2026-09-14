@@ -154,7 +154,9 @@ const LECTURA = {
   entradilla: "David se presenta y habla de su amiga Sarah. Todo el texto usa el vocabulario y las estructuras de esta lección: verbo <i>to be</i>, presente simple y la <i>-s</i> de tercera persona.",
   parrafos: [
     "My name is David. I am twenty-two years old and I am from Honduras. I live in Tegucigalpa with my family. It is a beautiful city and I like it very much. I am a student at a language school. I study English and Spanish. My English class is at nine o'clock in the morning.",
-    "Sarah is my friend. She is from Canada and she lives in Toronto. She is twenty-four years old. She is a student too, but she also works. She works in a small office on Mondays. Sarah is very kind. Every morning she says, \"Good morning, David! How are you?\" And I say, \"I am fine, thank you.\" Now we are good friends."
+    "Sarah is my friend. She is from Canada and she lives in Toronto. She is twenty-four years old. She is a student too, but she also works. She works in a small office on Mondays. Sarah is very kind. Every morning she says, \"Good morning, David! How are you?\" And I say, \"I am fine, thank you.\" Now we are good friends.",
+    "Pablo and Nico are my cousins. They are fourteen and they are students too. They live near my house and they walk to school every day. They are not in my English class because they are young, but we play football on Saturdays.",
+    "Mr. Ortega is our neighbour. He is fifty years old and he has a small shop on our street. He opens the shop at six in the morning and he works all day. He is a quiet man, but he always says hello to me. \"Good morning, David,\" he says. \"How is your family?\""
   ],
   glosario: [
     /* Formas verbales: van aquí y no en VERBS para que la tarjeta muestre
@@ -201,18 +203,42 @@ const LECTURA = {
     ["years","jɪrz","años","íers"],
     ["morning","ˈmɔːrnɪŋ","mañana","mórning"],
     ["Mondays","ˈmʌndeɪz","los lunes","mándeis"],
-    ["o'clock","əˈklɑːk","en punto","oklók"]
+    ["o'clock","əˈklɑːk","en punto","oklók"],
+    /* Tercera persona: él y ellos */
+    ["they","ðeɪ","ellos, ellas","déi"],
+    ["he","hiː","él","jíi"],
+    ["has","hæz","tiene","jas"],
+    ["walk","wɔːk","caminan, camino","uók"],
+    ["play","pleɪ","jugamos, juego","pléi"],
+    ["opens","ˈoʊpnz","abre","óupns"],
+    ["cousins","ˈkʌznʒ","primos","kásins"],
+    ["neighbour","ˈneɪbər","vecino","néibar"],
+    ["shop","ʃɑːp","tienda","shap"],
+    ["street","striːt","calle","stríit"],
+    ["house","haʊs","casa","jáus"],
+    ["football","ˈfʊtbɔːl","fútbol","fútbol"],
+    ["young","jʌŋ","joven","iang"],
+    ["quiet","ˈkwaɪət","callado, tranquilo","kuáiet"],
+    ["man","mæn","hombre","man"],
+    ["near","nɪr","cerca de","níar"],
+    ["day","deɪ","día","déi"],
+    ["all day","ɔːl deɪ","todo el día","ol déi"],
+    ["hello","həˈloʊ","hola","jelóu"],
+    ["how","haʊ","cómo","jau"],
+    ["fourteen","ˌfɔːrˈtiːn","catorce","fortíin"],
+    ["fifty","ˈfɪfti","cincuenta","fífti"],
+    ["Saturdays","ˈsætərdeɪz","los sábados","sáterdeis"]
   ],
   preguntas: [
     { q:"Where does David live?",
       ops:["In Toronto","In Tegucigalpa","In Canada"], ok:1,
       pista:"Primer párrafo: «I live in Tegucigalpa with my family»." },
-    { q:"When is David's English class?",
-      ops:["At eight o'clock","In the afternoon","At nine o'clock"], ok:2,
-      pista:"Última frase del primer párrafo." },
     { q:"Does Sarah work?",
       ops:["Yes, on Mondays","No, she only studies","Yes, every day"], ok:0,
-      pista:"Segundo párrafo: «She works in a small office on Mondays»." }
+      pista:"Segundo párrafo: «She works in a small office on Mondays»." },
+    { q:"What time does Mr. Ortega open his shop?",
+      ops:["At nine o'clock","At eight o'clock","At six o'clock"], ok:2,
+      pista:"Último párrafo: «He opens the shop at…»." }
   ]
 };
 
