@@ -105,15 +105,15 @@ function cargarLeccion(id){
     + ". Si tu respuesta es correcta, el diálogo avanza; si no, se detiene y te indica exactamente qué corregir hasta que alcances el nivel requerido.";
 
   state.idx = 0; state.started = false; state.finished = false;
-  state.results = {}; state.lectura = {}; state.lastDiag = null; state.unlocked = false;
+  state.results = {}; state.lastDiag = null; state.unlocked = false;
   turnsEl.innerHTML = "";
 
-  renderVocab(); renderVerbs(); renderGrammar(); renderDialogue(); renderLectura(); renderRoad();
+  renderVocab(); renderVerbs(); renderGrammar(); renderDialogue(); renderRoad();
   go("vocab");
   ensureStartBtn();
   updateStats();
 
-  load().then(() => { updateStats(); pintarRespuestas(); if (state.lastDiag) renderDiag(false); });
+  load().then(() => { updateStats(); if (state.lastDiag) renderDiag(false); });
   return true;
 }
 
@@ -136,7 +136,7 @@ function enrutar(){
   const ruta = (location.hash || "#/").replace(/^#/, "");
   const m = ruta.match(/^\/leccion\/([a-z0-9-]+)$/);
   if (m && cargarLeccion(m[1])) mostrarVista("leccion");
-  else { renderHome(); renderRepaso(); mostrarVista("home"); }
+  else { renderHome(); mostrarVista("home"); }
 }
 window.addEventListener("hashchange", enrutar);
 
@@ -187,43 +187,4 @@ if ("serviceWorker" in navigator){
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
-}
-
-/* ---------- Lectura: botón de audio ---------- */
-$("#lectPlay").addEventListener("click", () => {
-  if (lecturaSonando){ lecturaSonando = false; TTS.stop(); return; }
-  leerEnVozAlta();
-});
-
-/* ---------- Lista de repaso acumulada ---------- */
-function renderRepaso(){
-  const host = $("#repasoHost"); if (!host) return;
-  const r = leerRepaso();
-  const claves = Object.keys(r).sort((a,b) => (r[b].fecha||0) - (r[a].fecha||0));
-  if (!claves.length){ host.innerHTML = ""; return; }
-
-  const c = el("div","repaso");
-  const cab = el("div","rh");
-  cab.innerHTML = `<h3>Palabras por repasar</h3>
-    <span class="rn">${claves.length}</span>
-    <span class="rd">Marcadas mientras leías. Pulsa ✓ cuando ya te la sepas.</span>`;
-  c.appendChild(cab);
-
-  const lista = el("div","rlist");
-  claves.forEach(k => {
-    const p = r[k];
-    const it = el("div","ritem");
-    it.innerHTML = `<div><div class="re">${esc(p.en)}</div><div class="rs">${esc(p.es)}</div></div>
-      <button class="rok" type="button" title="Ya me la sé">&#10003;</button>`;
-    it.querySelector(".rok").addEventListener("click", () => {
-      const actual = leerRepaso();
-      delete actual[k];
-      guardarRepaso(actual);
-      renderRepaso();
-    });
-    lista.appendChild(it);
-  });
-  c.appendChild(lista);
-  host.innerHTML = "";
-  host.appendChild(c);
 }
