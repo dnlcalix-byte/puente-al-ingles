@@ -83,6 +83,7 @@
     <button class="btn solid" id="continueBtn" type="button" hidden></button>
     <p class="ioshint" id="iosHint" hidden>En iPhone o iPad: toca <b>Compartir</b> y después <b>Añadir a pantalla de inicio</b> para instalarla como app.</p>
   </section>
+  <div id="repasoHost"></div>
   <div id="levelsHost"></div>
 </div>
 
@@ -98,8 +99,9 @@
     <div class="railhead">Fase 2 &middot; Lección</div>
     <div class="railgroup">
       <button class="navbtn" data-go="guion" type="button"><span class="navnum">4</span>Guion</button>
-      <button class="navbtn" data-go="prac" type="button"><span class="navnum">5</span>Práctica</button>
-      <button class="navbtn" data-go="diag" type="button"><span class="navnum">6</span>Diagnóstico</button>
+      <button class="navbtn" data-go="lect" type="button"><span class="navnum">5</span>Lectura</button>
+      <button class="navbtn" data-go="prac" type="button"><span class="navnum">6</span>Práctica</button>
+      <button class="navbtn" data-go="diag" type="button"><span class="navnum">7</span>Diagnóstico</button>
     </div>
     <div class="railhead">Programa</div>
     <div class="railgroup">
@@ -152,6 +154,22 @@
         <button class="btn sm" id="toggleEs" type="button" aria-pressed="true">Ocultar traducción</button>
       </div>
       <div class="card"><div class="dlg" id="dlgHost"></div></div>
+    </section>
+
+    <!-- ===== LECTURA ===== -->
+    <section class="panel" id="p-lect" hidden>
+      <div class="ptitle"><h2>Lectura fluida</h2><span class="tag" id="lectMeta"></span></div>
+      <p class="lede" id="lectEntradilla"></p>
+      <div class="lectbar">
+        <button class="btn sm solid" id="lectPlay" type="button">▶ Escuchar</button>
+        <span class="lecthint">Toca cualquier palabra subrayada para ver su significado, oírla y decidir si ya la sabes.</span>
+      </div>
+      <article class="lectura">
+        <h3 id="lectTitulo"></h3>
+        <div id="lectHost"></div>
+      </article>
+      <div id="lectQ" class="lectq"></div>
+      <div class="lectfoot">Comprensión: <b id="lectScore">sin responder</b></div>
     </section>
 
     <!-- ===== PRÁCTICA ===== -->
@@ -249,6 +267,7 @@
 
 <script src="curriculo.js"></script>
 <script src="a1-01.js"></script>
+<script src="a1-02.js"></script>
 <script src="motor.js"></script>
 <script src="app.js"></script>
 </body>

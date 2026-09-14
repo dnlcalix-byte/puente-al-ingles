@@ -194,17 +194,19 @@ let DB = null;
 const state = {
   idx: 0, started: false, mode: "guion", finished: false,
   results: {},           // índice de línea → {attempts, best, hint, said}
+  lectura: {},           // índice de pregunta → opción elegida
   unlocked: false, lastDiag: null
 };
 function studentLines(){ return DIALOGUE.map((l,i) => ({...l, i})).filter(l => l.s === "B"); }
 let TOTAL_TURNS = 0;
 
 function snapshot(){
-  return { results: state.results, unlocked: state.unlocked, lastDiag: state.lastDiag, v: 1 };
+  return { results: state.results, lectura: state.lectura, unlocked: state.unlocked, lastDiag: state.lastDiag, v: 2 };
 }
 function applySnapshot(d){
   if (!d || typeof d !== "object") return;
   if (d.results && typeof d.results === "object") state.results = d.results;
+  if (d.lectura && typeof d.lectura === "object") state.lectura = d.lectura;
   state.unlocked = !!d.unlocked;
   state.lastDiag = d.lastDiag || null;
 }
@@ -555,9 +557,17 @@ function metrics(){
   const avg = rs.length ? rs.reduce((a,r) => a + r.best, 0) / rs.length : 0;
   const first = rs.filter(r => r.best >= 0.88 && r.attempts === 1).length;
   const hints = rs.filter(r => r.hint).length;
-  const firstRate = first / lines.length;
-  const global = Math.max(0, 0.65*avg + 0.35*firstRate - hints*0.02);
-  return { lines, rs, done, avg, first, firstRate, hints, global, pass: global >= 0.8 && done === lines.length };
+  const firstRate = lines.length ? first / lines.length : 0;
+  const lect = puntajeLectura();
+  /* La parte oral pesa un 82% y la lectura un 18%. Si la lección no tiene
+     lectura, lo oral vale por el total. */
+  const oral = 0.65*avg + 0.35*firstRate;
+  const global = lect.n
+    ? Math.max(0, 0.82*oral + 0.18*lect.ratio - hints*0.02)
+    : Math.max(0, oral - hints*0.02);
+  const lecturaOk = !lect.n || (lect.respondidas === lect.n && lect.aciertos >= Math.ceil(lect.n * 0.6));
+  return { lines, rs, done, avg, first, firstRate, hints, global, lect, oral,
+           pass: global >= 0.8 && done === lines.length && lecturaOk };
 }
 
 async function finish(){
@@ -586,14 +596,18 @@ function renderDiag(fresh){
     <h3>${m.pass ? "Competencia A1-01 acreditada" : "Aún no alcanzas el umbral"}</h3></div>
     <p>${m.pass
       ? "Has demostrado que puedes saludar, presentarte, dar tu procedencia, edad y ocupación, y despedirte con fórmulas apropiadas. Queda desbloqueada la <b>Lección 02 · Familia y posesiones</b>."
-      : "Vuelve a la Fase 1 y repasa el guion y las estructuras señaladas abajo. Después repite el ejercicio: necesitas completar los 12 turnos con un índice global de <b>80%</b> o superior."}</p>`;
+      : (m.lect.n && m.lect.respondidas < m.lect.n
+          ? "Te faltan preguntas de <b>comprensión lectora</b> por responder. Vuelve al apartado <b>Lectura</b> y complétalas: cuentan un 18% del índice."
+          : "Vuelve a la Fase 1 y repasa el guion y las estructuras señaladas abajo. Después repite el ejercicio: necesitas completar todos los turnos con un índice global de <b>80%</b> o superior.")}</p>`;
   host.appendChild(v);
 
   const sg = el("div","scoregrid");
   const cells = [
     ["Índice global", Math.round(m.global*100) + "%", "umbral de desbloqueo: 80%"],
-    ["Precisión media", Math.round(m.avg*100) + "%", "sobre los 12 turnos"],
+    ["Precisión media", Math.round(m.avg*100) + "%", "sobre los " + m.lines.length + " turnos"],
     ["Al primer intento", m.first + "/" + m.lines.length, Math.round(m.firstRate*100) + "% de fluidez"],
+    ["Comprensión lectora", m.lect.n ? m.lect.aciertos + "/" + m.lect.n : "—",
+      m.lect.n ? (m.lect.respondidas === m.lect.n ? "18% del índice" : "faltan preguntas por responder") : "esta lección no tiene lectura"],
     ["Pistas usadas", String(m.hints), m.hints ? "−" + (m.hints*2) + " puntos" : "sin penalización"]
   ];
   cells.forEach(([k,val,d]) => sg.appendChild(el("div","sg",
@@ -740,7 +754,8 @@ function ensureStartBtn(){
 function go(id){
   document.querySelectorAll(".panel").forEach(p => { p.hidden = p.id !== "p" + "-" + id; });
   document.querySelectorAll(".navbtn").forEach(n => n.setAttribute("aria-current", String(n.dataset.go === id)));
-  if (id !== "guion" && id !== "prac") TTS.stop();
+  if (id !== "guion" && id !== "prac" && id !== "lect") TTS.stop();
+  if (id !== "lect"){ lecturaSonando = false; cerrarTarjeta(); }
   if (id === "diag") renderDiag(false);
   window.scrollTo({ top:0, behavior:"smooth" });
 }
@@ -911,6 +926,8 @@ function alFallar(ev){
 }
 
 function arrancarASR(){
+  /* Síncrona a propósito: Safari exige que rec.start() ocurra dentro del
+     mismo gesto del usuario. Cualquier await aquí rompería el reconocimiento. */
   if (!ASR.supported) return;
   ASR.last = "";
   /* Cortar la voz de Sarah antes de abrir el micrófono: en iOS ambas
@@ -955,3 +972,349 @@ $("#asrDiag").textContent = [
 
 
 /* El arranque y el enrutado viven en app.js */
+
+/* ============================================================
+   LECTURA FLUIDA
+   Texto de la lección con cada palabra con contenido tocable.
+   El diccionario se arma con el vocabulario, los verbos y el
+   glosario de apoyo, así que no hay que anotar el texto a mano.
+   ============================================================ */
+const CLAVE_REPASO = "puente-ingles-repaso";
+let DICC = new Map();        // clave normalizada → {en, ipa, es, pron, origen}
+let LECT_MAXPAL = 1;         // longitud máxima de una entrada, en palabras
+
+const claveDicc = s => norm(s).replace(/\s+/g, " ");
+
+/* Busca una entrada tolerando el genitivo sajón y los plurales regulares:
+   "grandfather's" y "sisters" encuentran "grandfather" y "sister" aunque
+   sólo esté la forma base en el glosario. */
+function buscarEntrada(k){
+  if (!k) return null;
+  if (DICC.has(k)) return k;
+  if (k.endsWith("es") && DICC.has(k.slice(0,-2))) return k.slice(0,-2);
+  if (k.endsWith("s")  && k.length > 3 && DICC.has(k.slice(0,-1))) return k.slice(0,-1);
+  return null;
+}
+
+function leerRepaso(){
+  try { return JSON.parse(localStorage.getItem(CLAVE_REPASO)) || {}; } catch(e){ return {}; }
+}
+function guardarRepaso(r){
+  try { localStorage.setItem(CLAVE_REPASO, JSON.stringify(r)); } catch(e){}
+}
+function marcarPalabra(clave, estado){
+  const r = leerRepaso();
+  if (estado === "aprendido") delete r[clave];
+  else {
+    const e = DICC.get(clave);
+    if (!e) return;
+    r[clave] = { en:e.en, ipa:e.ipa, es:e.es, pron:e.pron,
+                 leccion: LECCION ? LECCION.meta.id : "", fecha: Date.now() };
+  }
+  guardarRepaso(r);
+  document.querySelectorAll('.pal[data-k="' + CSS.escape(clave) + '"]')
+    .forEach(n => n.classList.toggle("porAprender", estado !== "aprendido"));
+  if (typeof renderRepaso === "function") renderRepaso();
+}
+
+/* Formas conjugadas a partir de la tabla de verbos */
+function formasVerbo(fila){
+  const [inf,, pres, pas, fut] = fila;
+  const trozos = [inf.replace(/^to\s+/, ""), pres, pas, fut.replace(/^will\s+/, "")];
+  const formas = new Set();
+  trozos.forEach(t => String(t).split(/[/·,]/).forEach(x => {
+    const w = x.trim();
+    if (w && !/\s/.test(w)) formas.add(w);
+  }));
+  return [...formas];
+}
+
+function construirDiccionario(){
+  DICC = new Map(); LECT_MAXPAL = 1;
+  const meter = (en, ipa, es, pron, origen) => {
+    const k = claveDicc(en);
+    if (!k || DICC.has(k)) return;
+    DICC.set(k, { en, ipa, es, pron, origen });
+    LECT_MAXPAL = Math.max(LECT_MAXPAL, k.split(" ").length);
+  };
+  (VOCAB || []).forEach(g => g.items.forEach(([en,ipa,es,pron]) => meter(en,ipa,es,pron,"vocabulario")));
+  const lect = LECCION && LECCION.LECTURA;
+  if (lect && lect.glosario) lect.glosario.forEach(([en,ipa,es,pron]) => meter(en,ipa,es,pron,"glosario"));
+  (VERBS || []).forEach(fila => {
+    const es = fila[5], ipa = "", pron = "";
+    formasVerbo(fila).forEach(f => meter(f, ipa, es + " (" + fila[0] + ")", pron, "verbo"));
+  });
+}
+
+/* Convierte un párrafo en nodos, marcando lo que está en el diccionario */
+function nodosParrafo(texto){
+  const cont = el("p","rp");
+  const LETRA = "A-Za-z\u00C0-\u024F'";
+  const piezas = texto.match(new RegExp("[" + LETRA + "]+|[^" + LETRA + "]+", "g")) || [];
+  const esPalabra = t => new RegExp("^[" + LETRA + "]+$").test(t);
+  let i = 0;
+  while (i < piezas.length){
+    if (!esPalabra(piezas[i])){ cont.appendChild(document.createTextNode(piezas[i])); i++; continue; }
+    let encontrado = null;
+    for (let n = Math.min(LECT_MAXPAL, 6); n >= 1 && !encontrado; n--){
+      const trozo = [];
+      let j = i, restantes = n;
+      while (j < piezas.length && restantes > 0){
+        trozo.push(piezas[j]);
+        if (esPalabra(piezas[j])) restantes--;
+        j++;
+      }
+      while (trozo.length && !esPalabra(trozo[trozo.length-1])) { trozo.pop(); j--; }
+      const bruto = trozo.join("");
+      const k = buscarEntrada(claveDicc(bruto));
+      if (k) encontrado = { k, bruto, hasta: j };
+    }
+    if (encontrado){
+      const b = el("button","pal");
+      b.type = "button";
+      b.dataset.k = encontrado.k;
+      b.textContent = encontrado.bruto;
+      /* La palabra y la puntuación que la sigue viajan juntas: si no, la coma
+         o el punto se van solos al principio de la línea siguiente. */
+      const envoltura = el("span","nb");
+      envoltura.appendChild(b);
+      let j = encontrado.hasta;
+      if (j < piezas.length && !esPalabra(piezas[j])){
+        const cola = piezas[j].match(new RegExp("^[^\\s" + LETRA + "]+"));
+        if (cola){
+          envoltura.appendChild(document.createTextNode(cola[0]));
+          const resto = piezas[j].slice(cola[0].length);
+          if (resto) piezas[j] = resto; else j++;
+        }
+      }
+      cont.appendChild(envoltura);
+      i = j;
+    } else {
+      cont.appendChild(document.createTextNode(piezas[i]));
+      i++;
+    }
+  }
+  return cont;
+}
+
+/* Tarjeta emergente de una palabra */
+function cerrarTarjeta(){
+  const t = $("#rcard"); if (t) t.remove();
+  document.removeEventListener("click", alPulsarFuera);
+  document.removeEventListener("keydown", alPulsarEscape);
+}
+function abrirTarjeta(boton){
+  cerrarTarjeta();
+  const clave = boton.dataset.k;
+  const e = DICC.get(clave);
+  if (!e) return;
+  const enRepaso = !!leerRepaso()[clave];
+
+  const c = el("div","rcard"); c.id = "rcard";
+  c.innerHTML = `
+    <div class="rc-top">
+      <button class="rc-say" type="button" title="Escuchar">&#9834;</button>
+      <span class="rc-en">${esc(e.en)}</span>
+    </div>
+    ${e.ipa ? `<div class="rc-ipa afi">|${esc(e.ipa)}|</div>` : ""}
+    ${e.pron ? `<div class="rc-pron"><span class="ap">&asymp;</span> ${esc(e.pron)}</div>` : ""}
+    <div class="rc-es">${esc(e.es)}</div>
+    <div class="rc-acc">
+      <button class="rc-b ok" type="button">Aprendido</button>
+      <button class="rc-b go${enRepaso ? " on" : ""}" type="button">Aprender</button>
+    </div>`;
+  document.body.appendChild(c);
+
+  const r = boton.getBoundingClientRect();
+  const ancho = c.offsetWidth, alto = c.offsetHeight;
+  let x = r.left + r.width/2 - ancho/2;
+  x = Math.max(10, Math.min(x, window.innerWidth - ancho - 10));
+  let y = r.top + window.scrollY - alto - 10;
+  if (r.top - alto - 10 < 8) y = r.bottom + window.scrollY + 10;
+  c.style.left = x + "px";
+  c.style.top = y + "px";
+
+  c.querySelector(".rc-say").addEventListener("click", ev => { ev.stopPropagation(); TTS.say(e.en, { rate: 0.8 }); });
+  c.querySelector(".rc-b.ok").addEventListener("click", ev => { ev.stopPropagation(); marcarPalabra(clave, "aprendido"); cerrarTarjeta(); });
+  c.querySelector(".rc-b.go").addEventListener("click", ev => { ev.stopPropagation(); marcarPalabra(clave, "aprender"); cerrarTarjeta(); });
+  c.addEventListener("click", ev => ev.stopPropagation());
+  setTimeout(() => {
+    document.addEventListener("click", alPulsarFuera);
+    document.addEventListener("keydown", alPulsarEscape);
+  }, 0);
+  TTS.say(e.en, { rate: 0.8 });
+}
+/* Los oyentes globales sólo existen mientras hay una tarjeta abierta: así no
+   pueden interferir con el resto de la aplicación. */
+function alPulsarFuera(){ cerrarTarjeta(); }
+function alPulsarEscape(ev){ if (ev.key === "Escape") cerrarTarjeta(); }
+
+/* Lectura en voz alta con resaltado amarillo palabra a palabra */
+let lecturaSonando = false;
+function anularResaltadoLectura(){
+  document.querySelectorAll("#lectHost .pal.mark, #lectHost .rt.mark").forEach(n => n.classList.remove("mark"));
+}
+async function leerEnVozAlta(){
+  const lect = LECCION && LECCION.LECTURA; if (!lect) return;
+  lecturaSonando = true;
+  $("#lectPlay").textContent = "■ Detener";
+  $("#lectHost").classList.add("leyendoAlgo");
+  const parrafos = [...document.querySelectorAll("#lectHost .rp")];
+  for (let i = 0; i < parrafos.length; i++){
+    if (!lecturaSonando) break;
+    const p = parrafos[i];
+    p.classList.add("leyendo");
+    p.scrollIntoView({ block:"center", behavior:"smooth" });
+    await hablarParrafo(lect.parrafos[i], p);
+    p.classList.remove("leyendo");
+    if (lecturaSonando) await new Promise(r => setTimeout(r, 350));
+  }
+  anularResaltadoLectura();
+  $("#lectHost").classList.remove("leyendoAlgo");
+  lecturaSonando = false;
+  $("#lectPlay").textContent = "▶ Escuchar";
+}
+function hablarParrafo(texto, cont){
+  /* Cada nodo de texto o botón se envuelve para poder resaltarlo, y se
+     guarda su posición en caracteres para casarla con onboundary. */
+  const marcas = [];
+  let pos = 0;
+  cont.childNodes.forEach(n => {
+    if (n.nodeType === 3){
+      const partes = n.textContent.match(/[A-Za-z']+|[^A-Za-z']+/g) || [];
+      const frag = document.createDocumentFragment();
+      partes.forEach(t => {
+        if (/^[A-Za-z']+$/.test(t)){
+          const s = el("span","rt"); s.textContent = t;
+          marcas.push({ nodo:s, a:pos, b:pos + t.length });
+          frag.appendChild(s);
+        } else frag.appendChild(document.createTextNode(t));
+        pos += t.length;
+      });
+      n.replaceWith(frag);
+    } else {
+      marcas.push({ nodo:n, a:pos, b:pos + n.textContent.length });
+      pos += n.textContent.length;
+    }
+  });
+  const marcar = k => { anularResaltadoLectura(); if (marcas[k]) marcas[k].nodo.classList.add("mark"); };
+  let hubo = false, temps = [];
+  const total = pos || 1;
+  const estimado = Math.max(2500, total * 72);
+  temps.push(setTimeout(() => {
+    if (hubo) return;
+    let acc = 0;
+    marcas.forEach((m,k) => {
+      temps.push(setTimeout(() => { if (!hubo) marcar(k); }, acc));
+      acc += (m.b - m.a + 1) / total * estimado;
+    });
+  }, 140));
+  return TTS.say(texto, {
+    rate: 0.82,
+    onBoundary(ci){
+      hubo = true; temps.forEach(clearTimeout); temps = [];
+      let k = marcas.findIndex(m => ci >= m.a && ci < m.b);
+      if (k < 0) k = Math.max(0, marcas.findIndex(m => m.a > ci) - 1);
+      marcar(k);
+    },
+    onEnd(){ temps.forEach(clearTimeout); }
+  });
+}
+
+/* Comprensión */
+function renderPreguntas(){
+  const lect = LECCION && LECCION.LECTURA;
+  const host = $("#lectQ"); host.innerHTML = "";
+  if (!lect || !lect.preguntas || !lect.preguntas.length) return;
+  host.appendChild(el("div","sechead","Comprensión · cuenta para el diagnóstico"));
+  lect.preguntas.forEach((p, i) => {
+    const c = el("div","qcard");
+    c.appendChild(el("div","qq", (i+1) + ". " + esc(p.q)));
+    const ops = el("div","qops");
+    p.ops.forEach((texto, k) => {
+      const b = el("button","qop"); b.type = "button";
+      b.textContent = texto;
+      b.addEventListener("click", () => responder(i, k, c, ops));
+      ops.appendChild(b);
+    });
+    c.appendChild(ops);
+    c.appendChild(el("div","qfb"));
+    host.appendChild(c);
+  });
+  pintarRespuestas();
+}
+function responder(i, k, tarjeta, ops){
+  const p = LECCION.LECTURA.preguntas[i];
+  state.lectura = state.lectura || {};
+  if (state.lectura[i] != null) return;          // una sola oportunidad
+  state.lectura[i] = k;
+  const bien = k === p.ok;
+  [...ops.children].forEach((b, j) => {
+    b.disabled = true;
+    if (j === p.ok) b.classList.add("correcta");
+    else if (j === k) b.classList.add("fallada");
+  });
+  const fb = tarjeta.querySelector(".qfb");
+  fb.className = "qfb " + (bien ? "ok" : "bad");
+  fb.innerHTML = bien ? "Correcto." : "No es esa. " + esc(p.pista);
+  save(); actualizarResumenLectura();
+}
+function pintarRespuestas(){
+  const lect = LECCION && LECCION.LECTURA; if (!lect) return;
+  const tarjetas = [...document.querySelectorAll("#lectQ .qcard")];
+  (lect.preguntas || []).forEach((p, i) => {
+    const elegida = state.lectura && state.lectura[i];
+    if (elegida == null || !tarjetas[i]) return;
+    const ops = tarjetas[i].querySelector(".qops");
+    [...ops.children].forEach((b, j) => {
+      b.disabled = true;
+      if (j === p.ok) b.classList.add("correcta");
+      else if (j === elegida) b.classList.add("fallada");
+    });
+    const fb = tarjetas[i].querySelector(".qfb");
+    const bien = elegida === p.ok;
+    fb.className = "qfb " + (bien ? "ok" : "bad");
+    fb.innerHTML = bien ? "Correcto." : "No es esa. " + esc(p.pista);
+  });
+  actualizarResumenLectura();
+}
+function puntajeLectura(){
+  const lect = LECCION && LECCION.LECTURA;
+  const n = lect && lect.preguntas ? lect.preguntas.length : 0;
+  if (!n) return { n:0, aciertos:0, respondidas:0, ratio:1 };
+  let aciertos = 0, respondidas = 0;
+  lect.preguntas.forEach((p, i) => {
+    const e = state.lectura && state.lectura[i];
+    if (e != null){ respondidas++; if (e === p.ok) aciertos++; }
+  });
+  return { n, aciertos, respondidas, ratio: aciertos / n };
+}
+function actualizarResumenLectura(){
+  const p = puntajeLectura();
+  const n = $("#lectScore"); if (!n) return;
+  n.textContent = p.respondidas ? p.aciertos + " / " + p.n + " correctas" : "sin responder";
+}
+
+/* Pintado completo del apartado */
+function renderLectura(){
+  const lect = LECCION && LECCION.LECTURA;
+  const host = $("#lectHost");
+  if (!lect){ host.innerHTML = "<p class='lede'>Esta lección todavía no tiene lectura.</p>"; return; }
+  construirDiccionario();
+  host.innerHTML = "";
+  const marcadas = leerRepaso();
+  lect.parrafos.forEach(t => {
+    const p = nodosParrafo(t);
+    host.appendChild(p);
+  });
+  host.querySelectorAll(".pal").forEach(b => {
+    if (marcadas[b.dataset.k]) b.classList.add("porAprender");
+    b.addEventListener("click", ev => { ev.stopPropagation(); abrirTarjeta(b); });
+  });
+  $("#lectTitulo").textContent = lect.titulo;
+  $("#lectEntradilla").innerHTML = lect.entradilla || "";
+  const palabras = lect.parrafos.join(" ").split(/\s+/).length;
+  $("#lectMeta").textContent = palabras + " palabras · " + Math.max(1, Math.round(palabras / 60)) + " min · "
+    + host.querySelectorAll(".pal").length + " palabras tocables";
+  renderPreguntas();
+}
