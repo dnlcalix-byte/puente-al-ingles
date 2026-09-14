@@ -142,6 +142,80 @@ const DIALOGUE = [
 ];
 DIALOGUE.forEach(l => { l.en = l.b.map(x => x[0]).join(" "); l.es = l.b.map(x => x[1]).join(" "); });
 
+/* ============================================================
+   LECTURA FLUIDA
+   Dos párrafos que sólo usan estructuras ya enseñadas en la lección.
+   El glosario cubre las palabras que el texto necesita y que no están
+   en VOCAB ni en VERBS, para que toda palabra con contenido sea tocable.
+   Mismo formato que VOCAB: [inglés, AFI, español, pronunciación figurada].
+   ============================================================ */
+const LECTURA = {
+  titulo: "David and Sarah",
+  entradilla: "David se presenta y habla de su amiga Sarah. Todo el texto usa el vocabulario y las estructuras de esta lección: verbo <i>to be</i>, presente simple y la <i>-s</i> de tercera persona.",
+  parrafos: [
+    "My name is David. I am twenty-two years old and I am from Honduras. I live in Tegucigalpa with my family. It is a beautiful city and I like it very much. I am a student at a language school. I study English and Spanish. My English class is at nine o'clock in the morning.",
+    "Sarah is my friend. She is from Canada and she lives in Toronto. She is twenty-four years old. She is a student too, but she also works. She works in a small office on Mondays. Sarah is very kind. Every morning she says, \"Good morning, David! How are you?\" And I say, \"I am fine, thank you.\" Now we are good friends."
+  ],
+  glosario: [
+    /* Formas verbales: van aquí y no en VERBS para que la tarjeta muestre
+       también pronunciación, no sólo la traducción. */
+    ["am","æm","soy, estoy","am"],
+    ["is","ɪz","es, está","is"],
+    ["are","ɑːr","eres, son, están","ar"],
+    ["live","lɪv","vivo, vives","liv"],
+    ["lives","lɪvz","vive","livs"],
+    ["study","ˈstʌdi","estudio, estudias","stádi"],
+    ["work","wɜːrk","trabajo, trabajas","uérk"],
+    ["works","wɜːrks","trabaja","uérks"],
+    /* Palabras gramaticales que el texto necesita */
+    ["I","aɪ","yo","ái"],
+    ["you","juː","tú, usted","iú"],
+    ["a","ə","un, una","a"],
+    ["the","ðə","el, la, los, las","da"],
+    ["from","frʌm","de, desde","from"],
+    ["good","ɡʊd","bueno, buena","gud"],
+    ["thank","θæŋk","agradecer","zánk"],
+    ["and","ænd","y","and"],
+    ["with","wɪð","con","uid"],
+    ["family","ˈfæməli","familia","fámili"],
+    ["like","laɪk","gustar","láik"],
+    ["much","mʌtʃ","mucho","mach"],
+    ["language school","ˈlæŋɡwɪdʒ skuːl","escuela de idiomas","lánguich skúul"],
+    ["school","skuːl","escuela","skúul"],
+    ["friend","frend","amigo, amiga","frend"],
+    ["friends","frendz","amigos, amigas","frends"],
+    ["but","bʌt","pero","bat"],
+    ["also","ˈɔːlsoʊ","también","ólsou"],
+    ["kind","kaɪnd","amable","káind"],
+    ["every","ˈevri","cada","évri"],
+    ["say","seɪ","decir","séi"],
+    ["says","sez","dice","ses"],
+    ["she","ʃiː","ella","shii"],
+    ["we","wiː","nosotros, nosotras","uii"],
+    ["it","ɪt","ello, lo","it"],
+    ["my","maɪ","mi","mái"],
+    ["at","æt","en, a","at"],
+    ["in","ɪn","en","in"],
+    ["on","ɑːn","en (con días)","an"],
+    ["old","oʊld","de edad","óuld"],
+    ["years","jɪrz","años","íers"],
+    ["morning","ˈmɔːrnɪŋ","mañana","mórning"],
+    ["Mondays","ˈmʌndeɪz","los lunes","mándeis"],
+    ["o'clock","əˈklɑːk","en punto","oklók"]
+  ],
+  preguntas: [
+    { q:"Where does David live?",
+      ops:["In Toronto","In Tegucigalpa","In Canada"], ok:1,
+      pista:"Primer párrafo: «I live in Tegucigalpa with my family»." },
+    { q:"When is David's English class?",
+      ops:["At eight o'clock","In the afternoon","At nine o'clock"], ok:2,
+      pista:"Última frase del primer párrafo." },
+    { q:"Does Sarah work?",
+      ops:["Yes, on Mondays","No, she only studies","Yes, every day"], ok:0,
+      pista:"Segundo párrafo: «She works in a small office on Mondays»." }
+  ]
+};
+
 window.LECCIONES = window.LECCIONES || {};
 window.LECCIONES["a1-01"] = {
   meta: {
@@ -154,6 +228,7 @@ window.LECCIONES["a1-01"] = {
     personajeIA: "Sarah",
     personajeAlumno: "David"
   },
-  VOCAB: VOCAB, PRONKEY: PRONKEY, VERBS: VERBS, GRAMMAR: GRAMMAR, DIALOGUE: DIALOGUE
+  VOCAB: VOCAB, PRONKEY: PRONKEY, VERBS: VERBS, GRAMMAR: GRAMMAR,
+  DIALOGUE: DIALOGUE, LECTURA: LECTURA
 };
 })();

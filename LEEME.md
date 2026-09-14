@@ -6,33 +6,31 @@ dispositivo.
 
 ## Archivos
 
+Todos en la raíz, sin carpetas.
+
 ```
-index.html              La página principal (cabecera, índice y vista de lección)
+index.html              Cabecera, índice del curso y vista de lección
 estilos.css             Todo el diseño, en temas claro y oscuro
 curriculo.js            Los 150 títulos de lección repartidos en A1…C1
-motor.js                El motor: audio, resaltado, evaluación y diagnóstico
+motor.js                El motor: audio, resaltado, voz, evaluación, diagnóstico
 app.js                  Índice del curso, enrutado e instalación
-lecciones/a1-01.js      Los datos de una lección
+a1-01.js                Los datos de una lección (uno por lección)
 manifest.webmanifest    Nombre, iconos y colores de la app instalada
 sw.js                   Service worker: permite usar la app sin internet
-iconos/                 Iconos 192, 512 y maskable
+icono-*.png             Iconos 192, 512 y maskable
 ```
 
 ## Publicarlo (hace falta una dirección https)
 
 El service worker y el micrófono **solo funcionan sobre https**, así que abrir
-`index.html` con doble clic no sirve para la versión instalable. Dos opciones
-gratuitas:
+`index.html` con doble clic no sirve para la versión instalable.
 
-**Netlify Drop** — la más rápida, sin cuenta técnica.
-1. Entra en `app.netlify.com/drop`.
-2. Arrastra la carpeta completa a la página.
-3. Te devuelve una dirección tipo `https://algo.netlify.app`. Esa es tu app.
+**GitHub Pages es la vía elegida para este proyecto**: sin cuota de
+despliegues, cada cambio queda versionado y se actualiza desde el navegador.
+Los pasos exactos están en **LEEME-GITHUB.md**.
 
-**GitHub Pages** — si prefieres controlar versiones.
-1. Crea un repositorio y sube estos archivos a la raíz.
-2. En *Settings → Pages*, elige la rama `main` y la carpeta `/root`.
-3. Queda publicada en `https://tuusuario.github.io/turepo/`.
+Alternativas si alguna vez la necesitas: Cloudflare Pages y `vercel.com/drop`
+aceptan la carpeta arrastrada directamente.
 
 ## Instalarlo en el teléfono
 
