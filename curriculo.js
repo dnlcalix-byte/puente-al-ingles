@@ -125,3 +125,64 @@ NIVELES.forEach(n => {
 const TOTAL_LECCIONES = CURSO.length;
 const leccionPorId = id => CURSO.find(l => l.id === id) || null;
 const nivelPorNombre = nv => NIVELES.find(n => n.nivel === nv) || null;
+
+/* ============================================================
+   GLOSARIO BASE · palabras funcionales comunes a todo el curso
+   Lo usa la lectura de cualquier lección, así que el glosario de
+   cada lección sólo necesita traer su vocabulario específico.
+   El glosario de la lección tiene prioridad sobre éste.
+   Formato: [inglés, AFI, español, pronunciación figurada]
+   ============================================================ */
+const GLOSARIO_BASE = [
+  /* Pronombres */
+  ["I","aɪ","yo","ái"],["you","juː","tú, usted","iú"],["he","hiː","él","jíi"],
+  ["she","ʃiː","ella","shii"],["it","ɪt","ello, lo","it"],["we","wiː","nosotros","uii"],
+  ["they","ðeɪ","ellos, ellas","déi"],["me","miː","mí","míi"],["him","hɪm","lo, le (a él)","jim"],
+  ["her","hɜːr","la, le, su (de ella)","jer"],["us","ʌs","nos","as"],["them","ðem","los, les","dem"],
+  /* Posesivos */
+  ["my","maɪ","mi, mis","mái"],["your","jʊr","tu, tus","iór"],["his","hɪz","su (de él)","jis"],
+  ["its","ɪts","su (de ello)","its"],["our","ˈaʊər","nuestro","áuar"],["their","ðer","su (de ellos)","der"],
+  /* Verbo to be y auxiliares */
+  ["am","æm","soy, estoy","am"],["is","ɪz","es, está","is"],["are","ɑːr","eres, son, están","ar"],
+  ["was","wʌz","era, estaba","uás"],["were","wɜːr","eran, estaban","uér"],
+  ["have","hæv","tengo, tienes","jav"],["has","hæz","tiene","jas"],["had","hæd","tenía, tuvo","jad"],
+  ["do","duː","hacer; auxiliar","du"],["does","dʌz","hace; auxiliar","das"],["did","dɪd","hizo; auxiliar","did"],
+  ["don't","doʊnt","no (auxiliar)","dóunt"],["doesn't","ˈdʌznt","no (3ª persona)","dásnt"],
+  ["isn't","ˈɪznt","no es, no está","ísnt"],["aren't","ɑːrnt","no son, no están","arnt"],
+  ["wasn't","ˈwʌznt","no era, no estaba","uásnt"],["can't","kænt","no puede","kant"],
+  ["can","kæn","poder","kan"],["will","wɪl","(futuro)","uíl"],["not","nɑːt","no","nat"],
+  /* Artículos, conjunciones y partículas */
+  ["a","ə","un, una","a"],["an","æn","un, una","an"],["the","ðə","el, la, los, las","da"],
+  ["and","ænd","y","and"],["or","ɔːr","o","or"],["but","bʌt","pero","bat"],["so","soʊ","así que","sóu"],
+  ["because","bɪˈkɔːz","porque","bicós"],["also","ˈɔːlsoʊ","también","ólsou"],["too","tuː","también","túu"],
+  ["very","ˈveri","muy","véri"],["only","ˈoʊnli","solamente","óunli"],["really","ˈrɪəli","de verdad","ríili"],
+  ["yes","jes","sí","yes"],["no","noʊ","no","nóu"],["of","əv","de","av"],
+  /* Preposiciones */
+  ["in","ɪn","en","in"],["on","ɑːn","en, sobre","an"],["at","æt","en, a","at"],
+  ["to","tuː","a, hacia","tu"],["from","frʌm","de, desde","from"],["with","wɪð","con","uid"],
+  ["for","fɔːr","para, por","for"],["about","əˈbaʊt","sobre, acerca de","abáut"],
+  /* Interrogativos */
+  ["what","wʌt","qué","uát"],["where","wer","dónde","uér"],["when","wen","cuándo","uén"],
+  ["who","huː","quién","jú"],["why","waɪ","por qué","uái"],["how","haʊ","cómo","jáu"],
+  ["which","wɪtʃ","cuál","uích"],["whose","huːz","de quién","júus"],
+  /* Demostrativos y cantidad */
+  ["this","ðɪs","este, esta","dis"],["that","ðæt","ese, esa","dat"],
+  ["these","ðiːz","estos, estas","díis"],["those","ðoʊz","esos, esas","dóus"],
+  ["there","ðer","allí; hay","der"],["here","hɪr","aquí","jíer"],
+  ["some","sʌm","algunos","sam"],["any","ˈeni","algún, ningún","éni"],["all","ɔːl","todo","ol"],
+  ["many","ˈmeni","muchos","méni"],["much","mʌtʃ","mucho","mach"],["more","mɔːr","más","mor"],
+  /* Números 1–20 */
+  ["one","wʌn","uno","uán"],["two","tuː","dos","túu"],["three","θriː","tres","zríi"],
+  ["four","fɔːr","cuatro","fóor"],["five","faɪv","cinco","fáiv"],["six","sɪks","seis","siks"],
+  ["seven","ˈsevn","siete","sévn"],["eight","eɪt","ocho","éit"],["nine","naɪn","nueve","náin"],
+  ["ten","ten","diez","ten"],["eleven","ɪˈlevn","once","ilévn"],["twelve","twelv","doce","tuélv"],
+  ["thirteen","ˌθɜːrˈtiːn","trece","zertíin"],["fourteen","ˌfɔːrˈtiːn","catorce","fortíin"],
+  ["fifteen","ˌfɪfˈtiːn","quince","fiftíin"],["twenty","ˈtwenti","veinte","tuénti"],
+  /* Fórmulas frecuentes */
+  ["thank you","ˈθæŋk juː","gracias","zánk iú"],["please","pliːz","por favor","plíis"],
+  ["of course","əv ˈkɔːrs","por supuesto","av kórs"],["sorry","ˈsɑːri","perdón","sári"],
+  ["name","neɪm","nombre","néim"],["people","ˈpiːpl","personas, gente","píipl"],
+  ["day","deɪ","día","déi"],["today","təˈdeɪ","hoy","tudéi"],["time","taɪm","tiempo, hora","táim"],
+  ["good","ɡʊd","bueno","gud"],["big","bɪɡ","grande","big"],["small","smɔːl","pequeño","smóol"],
+  ["new","nuː","nuevo","núu"],["old","oʊld","viejo; de edad","óuld"]
+];

@@ -1037,9 +1037,28 @@ function construirDiccionario(){
     DICC.set(k, { en, ipa, es, pron, origen });
     LECT_MAXPAL = Math.max(LECT_MAXPAL, k.split(" ").length);
   };
+  /* Prioridad: vocabulario de la lección > glosario de la lección >
+     glosario base del curso > formas verbales de la tabla. */
   (VOCAB || []).forEach(g => g.items.forEach(([en,ipa,es,pron]) => meter(en,ipa,es,pron,"vocabulario")));
   const lect = LECCION && LECCION.LECTURA;
   if (lect && lect.glosario) lect.glosario.forEach(([en,ipa,es,pron]) => meter(en,ipa,es,pron,"glosario"));
+  /* Vocabulario de las lecciones anteriores: en la lección 10 el estudiante
+     puede tocar cualquier palabra que ya estudió en la 1 a la 9. */
+  const orden = (typeof CURSO !== "undefined" ? CURSO : []).map(l => l.id);
+  const aqui = LECCION ? orden.indexOf(LECCION.meta.id) : -1;
+  if (aqui > 0){
+    orden.slice(0, aqui).forEach(idAnterior => {
+      const prev = window.LECCIONES && window.LECCIONES[idAnterior];
+      if (!prev) return;
+      (prev.VOCAB||[]).forEach(g => g.items.forEach(([en,ipa,es,pron]) =>
+        meter(en,ipa,es,pron,"lección " + idAnterior)));
+      if (prev.LECTURA && prev.LECTURA.glosario)
+        prev.LECTURA.glosario.forEach(([en,ipa,es,pron]) =>
+          meter(en,ipa,es,pron,"lección " + idAnterior));
+    });
+  }
+  if (typeof GLOSARIO_BASE !== "undefined")
+    GLOSARIO_BASE.forEach(([en,ipa,es,pron]) => meter(en,ipa,es,pron,"base"));
   (VERBS || []).forEach(fila => {
     const es = fila[5], ipa = "", pron = "";
     formasVerbo(fila).forEach(f => meter(f, ipa, es + " (" + fila[0] + ")", pron, "verbo"));
