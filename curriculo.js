@@ -178,6 +178,19 @@ const GLOSARIO_BASE = [
   ["ten","ten","diez","ten"],["eleven","ɪˈlevn","once","ilévn"],["twelve","twelv","doce","tuélv"],
   ["thirteen","ˌθɜːrˈtiːn","trece","zertíin"],["fourteen","ˌfɔːrˈtiːn","catorce","fortíin"],
   ["fifteen","ˌfɪfˈtiːn","quince","fiftíin"],["twenty","ˈtwenti","veinte","tuénti"],
+  /* Conectores y comodines que salen en casi todos los textos */
+  ["if","ɪf","si","if"],["by","baɪ","por, con","bái"],["than","ðæn","que (comparando)","dan"],
+  ["know","noʊ","saber, conocer","nóu"],["knows","noʊz","sabe","nóus"],
+  ["a lot","ə lɑːt","mucho","a lat"],["minus","ˈmaɪnəs","menos, bajo cero","máinas"],
+  ["even","ˈiːvn","incluso","íivn"],["still","stɪl","todavía","stil"],
+  ["maybe","ˈmeɪbi","quizá","méibi"],["always","ˈɔːlweɪz","siempre","ólueis"],
+  ["never","ˈnevər","nunca","névar"],["sometimes","ˈsʌmtaɪmz","a veces","sámtaims"],
+  ["every","ˈevri","cada","évri"],["then","ðen","luego","den"],
+  ["here","hɪr","aquí","jíer"],["over there","ˈoʊvər ðer","por allá","óuvar der"],
+  /* Meses que faltaban */
+  ["August","ˈɔːɡəst","agosto","ógast"],["September","sepˈtembər","septiembre","septémbar"],
+  ["October","ɑːkˈtoʊbər","octubre","aktóubar"],["November","noʊˈvembər","noviembre","nouvémbar"],
+  ["December","dɪˈsembər","diciembre","disémbar"],
   /* Fórmulas frecuentes */
   ["thank you","ˈθæŋk juː","gracias","zánk iú"],["please","pliːz","por favor","plíis"],
   ["of course","əv ˈkɔːrs","por supuesto","av kórs"],["sorry","ˈsɑːri","perdón","sári"],

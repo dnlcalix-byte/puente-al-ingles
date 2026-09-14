@@ -3,7 +3,7 @@
    Sube el número de VERSION cada vez que cambies un archivo:
    así el navegador descarta la copia vieja y baja la nueva.
    ============================================================ */
-const VERSION = "puente-ingles-v9";
+const VERSION = "puente-ingles-v10";
 const ARCHIVOS = [
   "./", "./index.html", "./estilos.css",
   "./curriculo.js", "./motor.js", "./app.js",
@@ -13,6 +13,9 @@ const ARCHIVOS = [
   "./a1-04.js",
   "./a1-05.js",
   "./a1-06.js",
+  "./a1-07.js",
+  "./a1-08.js",
+  "./a1-09.js",
   "./manifest.webmanifest",
   "./icono-192.png", "./icono-512.png", "./icono-maskable-512.png"
 ];
