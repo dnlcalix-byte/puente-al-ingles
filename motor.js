@@ -1333,7 +1333,12 @@ function renderLectura(){
   $("#lectTitulo").textContent = lect.titulo;
   $("#lectEntradilla").innerHTML = lect.entradilla || "";
   const palabras = lect.parrafos.join(" ").split(/\s+/).length;
+  /* Se cuentan palabras, no botones: una entrada de varias palabras
+     ("are going to") es un solo botón pero cubre tres palabras. */
+  let tocables = 0;
+  host.querySelectorAll(".pal").forEach(n =>
+    tocables += (n.textContent.match(/[A-Za-zÀ-ɏ']+/g) || []).length);
   $("#lectMeta").textContent = palabras + " palabras · " + Math.max(1, Math.round(palabras / 60)) + " min · "
-    + host.querySelectorAll(".pal").length + " palabras tocables";
+    + tocables + " palabras tocables";
   renderPreguntas();
 }
