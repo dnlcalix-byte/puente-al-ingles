@@ -9,6 +9,18 @@ const $ = s => document.querySelector(s);
 const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c; if (h != null) n.innerHTML = h; return n; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
 
+/* Igual que esc(), pero deja pasar el puñado de etiquetas de formato que usa
+   el contenido de las lecciones: <b>, <i>, <span class='wrong'>, las entidades
+   de flecha… El texto viene del propio curso, nunca del estudiante, así que la
+   lista blanca es sólo una precaución. Se usa en todo lo que el autor escribe
+   a mano: títulos, subtítulos, chips, celdas de tabla, avisos y pistas. */
+const fmt = s => esc(s)
+  .replace(/&lt;(\/?)(b|i|u|em|strong|code|small|sub|sup)&gt;/g, "<$1$2>")
+  .replace(/&lt;br\s*\/?&gt;/g, "<br>")
+  .replace(/&lt;span class=(?:&quot;|')(wrong|right|mono|ap|afi)(?:&quot;|')&gt;/g, '<span class="$1">')
+  .replace(/&lt;\/span&gt;/g, "</span>")
+  .replace(/&amp;(rarr|larr|nbsp|middot|hellip|mdash|ndash|asymp|times|deg|amp|lt|gt|quot);/g, "&$1;");
+
 const NUMWORDS = { "22":"twenty two","24":"twenty four","9":"nine","2":"two","4":"four" };
 const CONTRACTIONS = [
   [/\bi'm\b/g,"i am"],[/\byou're\b/g,"you are"],[/\bhe's\b/g,"he is"],[/\bshe's\b/g,"she is"],
@@ -277,25 +289,26 @@ function renderGrammar(){
   const host = $("#gramHost"); host.innerHTML = "";
   GRAMMAR.forEach(g => {
     const c = el("div","gcard");
-    c.appendChild(el("h3", null, esc(g.t)));
-    c.appendChild(el("div","gsub", esc(g.s)));
+    c.appendChild(el("h3", null, fmt(g.t)));
+    c.appendChild(el("div","gsub", fmt(g.s)));
     c.appendChild(el("p", null, g.p));
     if (g.chips){
       const cw = el("div","chips");
-      g.chips.forEach(([a,bb]) => cw.appendChild(el("span","chip",`<b>${esc(a)}</b> <i>${esc(bb)}</i>`)));
+      g.chips.forEach(([a,bb]) => cw.appendChild(el("span","chip",`<b>${fmt(a)}</b> <i>${fmt(bb)}</i>`)));
       c.appendChild(cw);
     }
     if (g.table){
       const tw = el("div","tw"); tw.style.marginTop = "4px";
       const t = el("table");
-      t.innerHTML = "<thead><tr>" + g.table.head.map(h => `<th>${esc(h)}</th>`).join("") + "</tr></thead><tbody>"
-        + g.table.rows.map(r => "<tr>" + r.map((x,k) => `<td class="${k ? "mono" : ""}">${esc(x)}</td>`).join("") + "</tr>").join("")
+      /* fmt() y no esc(): las celdas llevan <span class='wrong'> y cursivas. */
+      t.innerHTML = "<thead><tr>" + g.table.head.map(h => `<th>${fmt(h)}</th>`).join("") + "</tr></thead><tbody>"
+        + g.table.rows.map(r => "<tr>" + r.map((x,k) => `<td class="${k ? "mono" : ""}">${fmt(x)}</td>`).join("") + "</tr>").join("")
         + "</tbody>";
       tw.appendChild(t); c.appendChild(tw);
     }
     if (g.aviso){
       const a = el("div","aviso");
-      a.innerHTML = `<div class="at">${esc(g.aviso[0])}</div><p>${g.aviso[1]}</p>`;
+      a.innerHTML = `<div class="at">${fmt(g.aviso[0])}</div><p>${g.aviso[1]}</p>`;
       c.appendChild(a);
     }
     host.appendChild(c);
@@ -1275,7 +1288,7 @@ function responder(i, k, tarjeta, ops){
   });
   const fb = tarjeta.querySelector(".qfb");
   fb.className = "qfb " + (bien ? "ok" : "bad");
-  fb.innerHTML = bien ? "Correcto." : "No es esa. " + esc(p.pista);
+  fb.innerHTML = bien ? "Correcto." : "No es esa. " + fmt(p.pista);
   save(); actualizarResumenLectura();
 }
 function pintarRespuestas(){
@@ -1293,7 +1306,7 @@ function pintarRespuestas(){
     const fb = tarjetas[i].querySelector(".qfb");
     const bien = elegida === p.ok;
     fb.className = "qfb " + (bien ? "ok" : "bad");
-    fb.innerHTML = bien ? "Correcto." : "No es esa. " + esc(p.pista);
+    fb.innerHTML = bien ? "Correcto." : "No es esa. " + fmt(p.pista);
   });
   actualizarResumenLectura();
 }

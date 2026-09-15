@@ -97,6 +97,11 @@ function cargarLeccion(id){
   $("#lvEyebrow").textContent = "Nivel " + L.meta.nivel + " · Lección "
     + String(L.meta.numero).padStart(2,"0") + " de " + (info ? info.total : "?");
   $("#lvTitle").textContent = L.meta.titulo;
+  const pie = $("#pieLeccion");
+  if (pie) pie.innerHTML = "Puente al Inglés &middot; Lección "
+    + L.meta.nivel + "-" + String(L.meta.numero).padStart(2,"0")
+    + " &middot; " + esc(L.meta.titulo)
+    + " &middot; Descriptores del MCER (Consejo de Europa)";
   $("#lvCando").textContent = "Descriptor MCER " + L.meta.nivel + ": «" + L.meta.descriptor + "»";
   $("#lvScene").textContent = L.meta.escena;
   $("#lvRole").textContent = "Tú eres " + L.meta.personajeAlumno;
