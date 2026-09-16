@@ -119,7 +119,7 @@
 
     <!-- ===== VERBOS ===== -->
     <section class="panel" id="p-verbos" hidden>
-      <div class="ptitle"><h2>Verbos</h2><span class="tag">11 verbos · 3 tiempos</span></div>
+      <div class="ptitle"><h2>Verbos</h2><span class="tag" id="verbCount"></span></div>
       <p class="lede">Los verbos <b>regulares</b> forman el pasado añadiendo <span class="mono">-ed</span>. Los <b>irregulares</b> cambian de forma y deben memorizarse. El futuro simple se construye siempre igual: <span class="mono">will + infinitivo sin «to»</span>, sin importar el tipo de verbo ni la persona.</p>
       <div class="tw">
         <table>
@@ -139,15 +139,15 @@
 
     <!-- ===== GRAMÁTICA ===== -->
     <section class="panel" id="p-gram" hidden>
-      <div class="ptitle"><h2>Gramática</h2><span class="tag">6 estructuras</span></div>
+      <div class="ptitle"><h2>Gramática</h2><span class="tag" id="gramCount"></span></div>
       <p class="lede">Estas seis estructuras sostienen por completo el diálogo de la lección. Estúdialas antes de pasar a la práctica: en la Fase 2 el sistema asume que ya las dominas.</p>
       <div id="gramHost"></div>
     </section>
 
     <!-- ===== GUION ===== -->
     <section class="panel" id="p-guion" hidden>
-      <div class="ptitle"><h2>Guion del diálogo</h2><span class="tag">24 líneas · A1</span></div>
-      <p class="lede">Modelo sintáctico entre <b>Sarah</b> (Persona 1) y <b>David</b> (Persona 2). Cada bloque en inglés lleva su traducción alineada justo debajo, de modo que puedas ver la correspondencia estructural entre ambos idiomas. Bajo cada línea va su pronunciación aproximada en letras españolas. Pulsa ▶ para escuchar una línea: el resaltado amarillo avanzará bloque por bloque al ritmo del audio.</p>
+      <div class="ptitle"><h2>Guion del diálogo</h2><span class="tag" id="dlgCount"></span></div>
+      <p class="lede" id="guionLede"></p>
       <div style="display:flex; gap:9px; flex-wrap:wrap; margin-bottom:16px">
         <button class="btn sm solid" id="playAll" type="button">▶ Reproducir diálogo completo</button>
         <button class="btn sm" id="stopAll" type="button">■ Detener</button>
@@ -290,6 +290,15 @@
 <script src="a1-22.js"></script>
 <script src="a1-23.js"></script>
 <script src="a1-24.js"></script>
+<script src="a2-01.js"></script>
+<script src="a2-02.js"></script>
+<script src="a2-03.js"></script>
+<script src="a2-04.js"></script>
+<script src="a2-05.js"></script>
+<script src="a2-06.js"></script>
+<script src="a2-07.js"></script>
+<script src="a2-08.js"></script>
+<script src="a2-09.js"></script>
 <script src="motor.js"></script>
 <script src="app.js"></script>
 </body>

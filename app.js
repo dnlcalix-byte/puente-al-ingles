@@ -97,6 +97,20 @@ function cargarLeccion(id){
   $("#lvEyebrow").textContent = "Nivel " + L.meta.nivel + " · Lección "
     + String(L.meta.numero).padStart(2,"0") + " de " + (info ? info.total : "?");
   $("#lvTitle").textContent = L.meta.titulo;
+  /* Rótulos de panel: se calculan desde la lección, no van escritos a mano. */
+  const nVerbos = (L.VERBS || []).length, nGram = (L.GRAMMAR || []).length,
+        nLineas = (L.DIALOGUE || []).length;
+  const ponTag = (sel, txt) => { const n = $(sel); if (n) n.textContent = txt; };
+  ponTag("#verbCount", nVerbos + " verbos \u00b7 3 tiempos");
+  ponTag("#gramCount", nGram + " estructuras");
+  ponTag("#dlgCount", nLineas + " l\u00edneas \u00b7 " + L.meta.nivel);
+  const gl = $("#guionLede");
+  if (gl) gl.innerHTML = "Modelo sint\u00e1ctico entre <b>" + esc(L.meta.personajeIA)
+    + "</b> (Persona 1) y <b>" + esc(L.meta.personajeAlumno)
+    + "</b> (Persona 2). Cada bloque en ingl\u00e9s lleva su traducci\u00f3n alineada justo debajo, "
+    + "de modo que puedas ver la correspondencia estructural entre ambos idiomas. Bajo cada l\u00ednea "
+    + "va su pronunciaci\u00f3n aproximada en letras espa\u00f1olas. Pulsa \u25b6 para escuchar una l\u00ednea: "
+    + "el resaltado amarillo avanzar\u00e1 bloque por bloque al ritmo del audio.";
   const pie = $("#pieLeccion");
   if (pie) pie.innerHTML = "Puente al Inglés &middot; Lección "
     + L.meta.nivel + "-" + String(L.meta.numero).padStart(2,"0")

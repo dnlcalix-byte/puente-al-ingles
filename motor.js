@@ -249,14 +249,14 @@ function renderVocab(){
   const kg = el("div","keygrid");
   PRONKEY.forEach(([sym,dsc,ex]) => {
     kg.appendChild(el("div","ki",
-      `<div class="sym">${esc(sym)}</div><div><div class="dsc">${dsc}</div><div class="ex">${ex}</div></div>`));
+      `<div class="sym">${fmt(sym)}</div><div><div class="dsc">${dsc}</div><div class="ex">${ex}</div></div>`));
   });
   keySec.appendChild(kg); host.appendChild(keySec);
 
   let count = 0;
   VOCAB.forEach(group => {
     const sec = el("div","sec");
-    sec.appendChild(el("div","sechead", esc(group.g)));
+    sec.appendChild(el("div","sechead", fmt(group.g)));
     const grid = el("div","vocab");
     group.items.forEach(([en,ipa,es,pron]) => {
       count++;
@@ -333,7 +333,9 @@ function renderDialogue(){
   DIALOGUE.forEach((line,i) => {
     const row = el("div","line");
     const spk = el("div", "spk " + line.s);
-    spk.innerHTML = `<span class="dot"></span><span class="nm">${line.s === "A" ? "Sarah" : "David"}</span>`;
+    spk.innerHTML = `<span class="dot"></span><span class="nm">${esc(line.s === "A"
+      ? (LECCION.meta.personajeIA || "Persona 1")
+      : (LECCION.meta.personajeAlumno || "Persona 2"))}</span>`;
     const btn = el("button","lplay","&#9654;");
     btn.type = "button"; btn.title = "Escuchar la línea";
     spk.appendChild(btn);
