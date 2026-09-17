@@ -236,5 +236,14 @@ const GLOSARIO_BASE = [
   ["Canada","ˈkænədə","Canadá","kánada"],
   ["Tegucigalpa","təˌɡuːsɪˈɡɑːlpə","Tegucigalpa","tegusigálpa"],
   ["Toronto","təˈrɑːntoʊ","Toronto","tarántou"],
-  ["ask","æsk","preguntar","ask"],["asks","æsks","pregunta","asks"]
+  ["ask","æsk","preguntar","ask"],["asks","æsks","pregunta","asks"],
+  ["Julia","ˈdʒuːliə","Julia (compañera de piso de Sarah)","chúlia"],
+  ["Emma","ˈemə","Emma (hermana irlandesa)","éma"],
+  ["Tom","tɑːm","Tom (hermano de Emma)","tam"],
+  ["Elsa","ˈelsə","Elsa (la casera)","élsa"],
+  ["Fuentes","ˈfwentes","Fuentes (jefa de recepción)","fuéntes"],
+  ["Miss","mɪs","señorita","mis"],
+  ["Diego","diˈeɪɡoʊ","Diego (camarero)","diéigou"],
+  ["Carmen","ˈkɑːrmen","Carmen (recepcionista)","kármen"],
+  ["Laura","ˈlɔːrə","Laura (agente de facturación)","lóra"]
 ];
